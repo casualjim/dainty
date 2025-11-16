@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+#MISE description="Generate code for SQL in Dainty"
+
+echo "🚀 Starting Dainty SQL code generation..."
+proj_dir=$(git rev-parse --show-toplevel)
+cd "$proj_dir" || exit 1
+
+sqlc generate

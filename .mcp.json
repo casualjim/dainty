@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "rust-lsp": {
+      "args": ["-y", "@p1va/symbols@latest", "run", "rust-analyzer"],
+      "command": "bunx",
+      "env": {},
+      "type": "stdio",
+      "disabled": false,
+      "alwaysAllow": []
+    }
+  }
+}

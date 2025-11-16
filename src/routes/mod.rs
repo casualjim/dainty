@@ -1,0 +1,100 @@
+mod components;
+mod pages;
+
+use axum::{
+  Json, Router,
+  extract::{Query, State},
+  response::IntoResponse,
+  routing::get,
+};
+use axum_htmx::AutoVaryLayer;
+use axum_tracing_opentelemetry::middleware::{OtelAxumLayer, OtelInResponseLayer};
+use serde::Deserialize;
+use serde_json::{Value, json};
+use sha3::{Digest, Sha3_256};
+use uuid::Uuid;
+
+use crate::{
+  app::AppState,
+  pgdb::{GetLayoutState, SaveLayoutState},
+};
+
+const ANONYMOUS_USER_ID: &str = "anonymous";
+
+#[derive(Debug, Deserialize)]
+struct LayoutQuery {
+  path: Option<String>,
+  device: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct LayoutUpdate {
+  path: Option<String>,
+  device: Option<String>,
+  #[serde(flatten)]
+  settings: Value,
+}
+
+// Hash URL paths + device type for context keys (matches TypeScript hashPath)
+fn hash_path(path: &str, device_type: &str) -> String {
+  let combined = format!("{}:{}", path, device_type);
+  let mut hasher = Sha3_256::new();
+  hasher.update(combined.as_bytes());
+  let result = hasher.finalize();
+  // Use first 16 chars for readability, matching TypeScript
+  format!("{:x}", result)[..16].to_string()
+}
+
+pub fn router(app: AppState) -> Router<AppState> {
+  Router::new()
+    .route(
+      "/api/layout",
+      get(get_layout_state).post(update_layout_state),
+    )
+    .merge(pages::routes(app.clone()))
+    .layer(AutoVaryLayer)
+    .layer(OtelInResponseLayer::default())
+    .layer(OtelAxumLayer::default())
+    .with_state(app)
+}
+
+async fn get_layout_state(
+  State(app): State<AppState>,
+  Query(query): Query<LayoutQuery>,
+) -> impl IntoResponse {
+  let db = app.try_pgconn().await.unwrap();
+  let path = query.path.as_deref().unwrap_or("/");
+  let device = query.device.as_deref().unwrap_or("desktop");
+  let context_key = hash_path(path, device);
+
+  let params = GetLayoutState::builder()
+    .user_id(ANONYMOUS_USER_ID)
+    .context_key(&context_key)
+    .build();
+
+  match params.query_opt(&db).await {
+    Ok(Some(state)) => Json(state.settings),
+    _ => Json(json!({})), // No saved state, client uses defaults
+  }
+}
+
+async fn update_layout_state(
+  State(app): State<AppState>,
+  Json(payload): Json<LayoutUpdate>,
+) -> impl IntoResponse {
+  let db = app.try_pgconn().await.unwrap();
+  let path = payload.path.as_deref().unwrap_or("/");
+  let device = payload.device.as_deref().unwrap_or("desktop");
+  let context_key = hash_path(path, device);
+
+  // Just upsert - ON CONFLICT handles the merge
+  let save_params = SaveLayoutState::builder()
+    .id(Uuid::now_v7())
+    .user_id(ANONYMOUS_USER_ID)
+    .context_key(&context_key)
+    .settings(&payload.settings)
+    .build();
+
+  let state = save_params.query_one(&db).await.unwrap();
+  Json(state.settings)
+}

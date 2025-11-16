@@ -1,0 +1,13 @@
+[tools]
+age = "latest"
+bun = "latest"
+sops = "latest"
+rust = { version = "latest", profile = "default", components = "llvm-tools,rust-analyzer" }
+"cargo:systemfd" = "latest"
+mkcert = "latest"
+node = "lts"
+
+[env]
+SOPS_AGE_KEY_FILE="$HOME/.config/mise/age.txt"
+DATABASE_URL="postgresql://postgres:@localhost:5432/dainty"
+_.file = ".env.json"
