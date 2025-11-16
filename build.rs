@@ -6,10 +6,10 @@ fn main() {
   println!("cargo:rerun-if-changed=queries/*.sql");
   println!("cargo:rerun-if-changed=assets/");
 
-  Command::new("sqlc")
-    .args(["generate"])
-    .status()
-    .expect("failed to run sqlc");
+  // Command::new("sqlc")
+  //   .args(["generate"])
+  //   .status()
+  //   .expect("failed to run sqlc");
 
   std::fs::remove_dir_all("target/frontend").unwrap_or_default();
 

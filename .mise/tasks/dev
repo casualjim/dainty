@@ -19,4 +19,4 @@ if [[ ! -f "$CERT_DIR/tls.crt" || ! -f "$CERT_DIR/tls.key" ]]; then
 fi
 
 export RUST_LOG="warn,dainty=debug"
-systemfd --no-pid -s http::8080 -- cargo watch --why -x 'run -- --tls-enabled --tls-key .config/certs/tls.key --tls-cert .config/certs/tls.crt'
+systemfd --no-reuse --no-pid -s http::8080 -- cargo watch --why -x 'run -- --tls-enabled --tls-key .config/certs/tls.key --tls-cert .config/certs/tls.crt'

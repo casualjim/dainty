@@ -95,7 +95,7 @@ async fn index_page(hx_request: HxRequest) -> impl IntoResponse {
                   <i x-show="leftSidebar" data-lucide="panel-left-close" class="w-4 h-4"></i>
                   <i x-show="!leftSidebar" data-lucide="panel-left-open" class="w-4 h-4"></i>
                 </button>
-                <div class="text-xl font-semibold leading-tight">"Slipstream"</div>
+                <div class="text-xl font-semibold leading-tight">"Dainty"</div>
                 <span class="badge badge-outline badge-primary">"Workspace"</span>
               </div>
               <div class="flex items-center gap-2">

@@ -60,6 +60,11 @@ async fn build_app(state: AppState) -> eyre::Result<Router> {
   debug!("Created server routes");
 
   // Global layers - CSP configured for Alpine.js
+  #[cfg(debug_assertions)]
+  let script_src = vec!["'self'", "'unsafe-eval'", "'unsafe-inline'"];
+  #[cfg(not(debug_assertions))]
+  let script_src = vec!["'self'", "'unsafe-eval'"];
+
   let csp = ContentSecurityPolicy::new()
     .default_src(vec!["'self'"])
     .base_uri(vec!["'self'"])
@@ -68,7 +73,7 @@ async fn build_app(state: AppState) -> eyre::Result<Router> {
     .frame_ancestors(vec!["'self'"])
     .img_src(vec!["'self'", "data:"])
     .object_src(vec!["'none'"])
-    .script_src(vec!["'self'", "'unsafe-eval'"])
+    .script_src(script_src)
     .script_src_attr(vec!["'unsafe-eval'"])
     .style_src(vec!["'self'", "https:", "'unsafe-inline'"])
     .upgrade_insecure_requests();
@@ -94,11 +99,10 @@ async fn build_app(state: AppState) -> eyre::Result<Router> {
   let app = Router::new()
     .merge(protected_routes)
     .nest_service("/static", static_file_handler(state.clone()))
-    .layer(HelmetLayer::new(Helmet::default()))
+    .layer(HelmetLayer::new(helmet))
     .layer(OtelInResponseLayer)
     .layer(OtelAxumLayer::default())
     .layer(metrics_layer())
-    .layer(CompressionLayer::new().quality(tower_http::CompressionLevel::Default))
     .with_state(state);
 
   debug!("Created routers");
@@ -171,6 +175,8 @@ pub async fn run(
     info!("Reloading!");
     app.layer(livereload)
   };
+
+  let app = app.layer(CompressionLayer::new().quality(tower_http::CompressionLevel::Default));
 
   // Prepare listenfd and start admin server
   let mut listenfd = prepare_listenfd();
