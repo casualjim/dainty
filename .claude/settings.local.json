@@ -1,4 +1,3 @@
 {
-  "enabledMcpjsonServers": ["rust-lsp"],
   "enableAllProjectMcpServers": true
 }

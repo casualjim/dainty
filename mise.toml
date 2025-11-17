@@ -12,7 +12,8 @@ node = "lts"
 hk = "latest"
 pkl = "latest"
 java = "latest"
-
+"ubi:cargo-bins/cargo-binstall" = "latest"
+"cargo:sqlx-cli" = { version = "latest", binstall = true }
 
 [env]
 DATABASE_URL="postgresql://postgres:@localhost:5432/dainty"
