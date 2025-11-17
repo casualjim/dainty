@@ -26,6 +26,7 @@ define_elements! {
 #[component]
 pub fn document<R: Renderable>(children: &R) -> impl Renderable {
   maud! {
+    !DOCTYPE
     html lang="en" {
       head {
         meta charset="utf-8";

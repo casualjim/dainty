@@ -5,7 +5,12 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.17",
     "@types/alpinejs": "^3.13.11",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@playwright/test": "^1.56.1"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "dev": "mise dev"
   },
   "peerDependencies": {
     "typescript": "^5"

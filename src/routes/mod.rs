@@ -3,10 +3,10 @@ mod pages;
 
 use axum::{
   Json, Router,
-  extract::{FromRequestParts, Query, State},
-  http::request::Parts,
+  extract::{FromRequestParts, Query, State, rejection::JsonRejection},
+  http::{StatusCode, header, request::Parts},
   response::IntoResponse,
-  routing::get,
+  routing::{MethodFilter, MethodRouter},
 };
 use axum_htmx::AutoVaryLayer;
 use axum_tracing_opentelemetry::middleware::{OtelAxumLayer, OtelInResponseLayer};
@@ -25,12 +25,6 @@ const ANONYMOUS_USER_ID: &str = "anonymous";
 
 #[derive(Debug, Clone)]
 struct ApiUserId(String);
-
-impl ApiUserId {
-  fn as_str(&self) -> &str {
-    self.0.as_str()
-  }
-}
 
 impl<S> FromRequestParts<S> for ApiUserId
 where
@@ -82,11 +76,13 @@ fn hash_path(path: &str, device_type: &str) -> String {
 }
 
 pub fn router(app: AppState) -> Router<AppState> {
+  let layout_route = MethodRouter::new()
+    .on(MethodFilter::GET, get_layout_state)
+    .on(MethodFilter::POST, update_layout_state)
+    .fallback(method_not_allowed);
+
   Router::new()
-    .route(
-      "/api/layout",
-      get(get_layout_state).post(update_layout_state),
-    )
+    .route("/api/layout", layout_route)
     .merge(pages::routes(app.clone()))
     .layer(AutoVaryLayer)
     .layer(OtelInResponseLayer::default())
@@ -111,15 +107,25 @@ async fn get_layout_state(
 
   match params.query_opt(&db).await {
     Ok(Some(state)) => Json(state.settings),
-    _ => Json(json!({})), // No saved state, client uses defaults
+    _ => Json(json!({})),
   }
 }
 
 async fn update_layout_state(
   State(app): State<AppState>,
   ApiUserId(user_id): ApiUserId,
-  Json(payload): Json<LayoutUpdate>,
+  payload: Result<Json<LayoutUpdate>, JsonRejection>,
 ) -> impl IntoResponse {
+  let payload = match payload {
+    Ok(Json(payload)) => payload,
+    Err(_) => {
+      return (
+        StatusCode::BAD_REQUEST,
+        Json(json!({ "error": "Invalid JSON payload" })),
+      );
+    }
+  };
+
   let db = app.try_pgconn().await.unwrap();
   let path = payload.path.as_deref().unwrap_or("/");
   let device = payload.device.as_deref().unwrap_or("desktop");
@@ -134,5 +140,13 @@ async fn update_layout_state(
     .build();
 
   let state = save_params.query_one(&db).await.unwrap();
-  Json(state.settings)
+  (StatusCode::OK, Json(state.settings))
+}
+
+async fn method_not_allowed() -> impl IntoResponse {
+  (
+    StatusCode::METHOD_NOT_ALLOWED,
+    [(header::ALLOW, "GET, POST")],
+    Json(json!({ "error": "Method not allowed" })),
+  )
 }
