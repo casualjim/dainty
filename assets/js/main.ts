@@ -7,6 +7,34 @@ import '@phosphor-icons/webcomponents/PhDotsThreeOutlineVertical';
 
 import { createIcons, Menu, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from 'lucide';
 
+type SidebarSide = 'left' | 'right';
+type LayoutTheme = 'system' | 'light' | 'dark';
+type DeviceType = 'mobile' | 'desktop';
+
+type LayoutStateContext = {
+  leftSidebar: boolean;
+  rightSidebar: boolean;
+  leftWidth: number;
+  rightWidth: number;
+  resizing: SidebarSide | null;
+  startX: number;
+  startWidth: number;
+  theme: LayoutTheme;
+  contextPath: string;
+  deviceType: DeviceType;
+  userId: string;
+  saveTimeout: ReturnType<typeof globalThis.setTimeout> | null;
+  init(): Promise<void>;
+  loadState(): Promise<void>;
+  saveState(updates: Record<string, unknown>): void;
+  startResize(side: SidebarSide, e: MouseEvent): void;
+  doResize(e: MouseEvent): void;
+  stopResize(): void;
+  cycleTheme(): void;
+  applyTheme(): void;
+  $watch: <T>(property: string, callback: (value: T) => void) => void;
+};
+
 createIcons({
   icons: {
     PanelLeftClose,
@@ -23,37 +51,37 @@ Alpine.data('layoutState', () => ({
   rightSidebar: window.innerWidth >= 1024,
   leftWidth: 320,
   rightWidth: 320,
-  resizing: null as string | null,
+  resizing: null as SidebarSide | null,
   startX: 0,
   startWidth: 0,
-  theme: 'system',
+  theme: 'system' as LayoutTheme,
   contextPath: window.location.pathname,
-  deviceType: (window.innerWidth < 1024 ? 'mobile' : 'desktop') as 'mobile' | 'desktop',
+  deviceType: (window.innerWidth < 1024 ? 'mobile' : 'desktop') as DeviceType,
   userId: 'default',
+  saveTimeout: null as ReturnType<typeof globalThis.setTimeout> | null,
 
-  async init() {
+  async init(this: LayoutStateContext) {
     await this.loadState();
 
     // Set up watchers after state is loaded
-    (this as any).$watch('leftSidebar', (value: boolean) => {
+    this.$watch('leftSidebar', (value: boolean) => {
       this.saveState({ left_sidebar_open: value });
     });
-    (this as any).$watch('rightSidebar', (value: boolean) => {
+    this.$watch('rightSidebar', (value: boolean) => {
       this.saveState({ right_sidebar_open: value });
     });
-    (this as any).$watch('theme', (value: string) => {
+    this.$watch('theme', (value: LayoutTheme) => {
       this.saveState({ theme: value });
     });
   },
 
-  async loadState() {
+  async loadState(this: LayoutStateContext) {
     try {
       const response = await fetch(`/api/layout?path=${encodeURIComponent(this.contextPath)}&device=${this.deviceType}`, {
         headers: { 'X-API-Key': this.userId }
       });
       if (response.ok) {
-        const data = await response.json();
-        const settings = data.settings || {};
+        const settings = await response.json();
 
         // Apply loaded settings
         if (window.innerWidth >= 1024) {
@@ -70,13 +98,13 @@ Alpine.data('layoutState', () => ({
     }
   },
 
-  saveState(updates: Record<string, any>) {
+  saveState(this: LayoutStateContext, updates: Record<string, unknown>) {
     // Debounce saves to avoid hammering the server
-    if ((this as any).saveTimeout) {
-      clearTimeout((this as any).saveTimeout);
+    if (this.saveTimeout) {
+      globalThis.clearTimeout(this.saveTimeout);
     }
 
-    (this as any).saveTimeout = setTimeout(() => {
+    this.saveTimeout = globalThis.setTimeout(() => {
       fetch('/api/layout', {
         method: 'POST',
         headers: {
@@ -90,7 +118,7 @@ Alpine.data('layoutState', () => ({
     }, 300);
   },
 
-  startResize(side: string, e: MouseEvent) {
+  startResize(this: LayoutStateContext, side: SidebarSide, e: MouseEvent) {
     this.resizing = side;
     this.startX = e.clientX;
     this.startWidth = side === 'left' ? this.leftWidth : this.rightWidth;
@@ -98,7 +126,7 @@ Alpine.data('layoutState', () => ({
     document.body.style.userSelect = 'none';
   },
 
-  doResize(e: MouseEvent) {
+  doResize(this: LayoutStateContext, e: MouseEvent) {
     if (!this.resizing) return;
     const delta = this.resizing === 'left' ? (e.clientX - this.startX) : (this.startX - e.clientX);
     const newWidth = this.startWidth + delta;
@@ -122,7 +150,7 @@ Alpine.data('layoutState', () => ({
     }
   },
 
-  stopResize() {
+  stopResize(this: LayoutStateContext) {
     if (this.resizing) {
       // Save width on resize complete
       if (this.resizing === 'left') {
@@ -136,7 +164,7 @@ Alpine.data('layoutState', () => ({
     document.body.style.userSelect = '';
   },
 
-  cycleTheme() {
+  cycleTheme(this: LayoutStateContext) {
     if (this.theme === 'system') {
       this.theme = 'light';
     } else if (this.theme === 'light') {
@@ -148,7 +176,7 @@ Alpine.data('layoutState', () => ({
     this.saveState({ theme: this.theme });
   },
 
-  applyTheme() {
+  applyTheme(this: LayoutStateContext) {
     if (this.theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', systemTheme);

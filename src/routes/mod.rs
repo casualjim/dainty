@@ -3,7 +3,8 @@ mod pages;
 
 use axum::{
   Json, Router,
-  extract::{Query, State},
+  extract::{FromRequestParts, Query, State},
+  http::request::Parts,
   response::IntoResponse,
   routing::get,
 };
@@ -12,6 +13,7 @@ use axum_tracing_opentelemetry::middleware::{OtelAxumLayer, OtelInResponseLayer}
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sha3::{Digest, Sha3_256};
+use std::convert::Infallible;
 use uuid::Uuid;
 
 use crate::{
@@ -20,6 +22,40 @@ use crate::{
 };
 
 const ANONYMOUS_USER_ID: &str = "anonymous";
+
+#[derive(Debug, Clone)]
+struct ApiUserId(String);
+
+impl ApiUserId {
+  fn as_str(&self) -> &str {
+    self.0.as_str()
+  }
+}
+
+impl<S> FromRequestParts<S> for ApiUserId
+where
+  S: Send + Sync,
+{
+  type Rejection = Infallible;
+
+  fn from_request_parts(
+    parts: &mut Parts,
+    _state: &S,
+  ) -> impl Future<Output = Result<Self, Self::Rejection>> + Send {
+    async move {
+      let user_id = parts
+        .headers
+        .get("x-api-key")
+        .and_then(|value| value.to_str().ok())
+        .map(|value| value.trim())
+        .filter(|value| !value.is_empty())
+        .unwrap_or(ANONYMOUS_USER_ID)
+        .to_string();
+
+      Ok(ApiUserId(user_id))
+    }
+  }
+}
 
 #[derive(Debug, Deserialize)]
 struct LayoutQuery {
@@ -60,6 +96,7 @@ pub fn router(app: AppState) -> Router<AppState> {
 
 async fn get_layout_state(
   State(app): State<AppState>,
+  ApiUserId(user_id): ApiUserId,
   Query(query): Query<LayoutQuery>,
 ) -> impl IntoResponse {
   let db = app.try_pgconn().await.unwrap();
@@ -68,7 +105,7 @@ async fn get_layout_state(
   let context_key = hash_path(path, device);
 
   let params = GetLayoutState::builder()
-    .user_id(ANONYMOUS_USER_ID)
+    .user_id(&user_id)
     .context_key(&context_key)
     .build();
 
@@ -80,6 +117,7 @@ async fn get_layout_state(
 
 async fn update_layout_state(
   State(app): State<AppState>,
+  ApiUserId(user_id): ApiUserId,
   Json(payload): Json<LayoutUpdate>,
 ) -> impl IntoResponse {
   let db = app.try_pgconn().await.unwrap();
@@ -90,7 +128,7 @@ async fn update_layout_state(
   // Just upsert - ON CONFLICT handles the merge
   let save_params = SaveLayoutState::builder()
     .id(Uuid::now_v7())
-    .user_id(ANONYMOUS_USER_ID)
+    .user_id(&user_id)
     .context_key(&context_key)
     .settings(&payload.settings)
     .build();

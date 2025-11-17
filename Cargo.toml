@@ -25,6 +25,7 @@ http = "1.3.1"
 hypertext = { version = "0.12.1", features = ["alpine", "htmx", "axum"] }
 jiff = { version = "0.2.16", features = ["js", "serde", "logging"] }
 listenfd = "1.0.2"
+maud = "0.27.0"
 mime_guess = "2.0.5"
 notify = "8.2.0"
 rmp-serde = "1.3.0"

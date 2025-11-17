@@ -25,19 +25,18 @@ define_elements! {
 
 #[component]
 pub fn document<R: Renderable>(children: &R) -> impl Renderable {
-  rsx! {
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>"Dainty"</title>
-        <link rel="stylesheet" href="/static/css/main.css" />
-        <script src="/static/js/main.js" defer=true type="module"></script>
-      </head>
-      <body class="min-h-screen bg-base-100 text-base-content overflow-x-hidden" x-data="layoutState" x-init="init()" @mousemove.window="doResize($event)" @mouseup.window="stopResize()">
+  maud! {
+    html lang="en" {
+      head {
+        meta charset="utf-8";
+        meta name="viewport" content="width=device-width, initial-scale=1";
+        title { "Dainty" }
+        link rel="stylesheet" href="/static/css/main.css";
+        script src="/static/js/main.js" defer=true type="module" {}
+      }
+      body class="min-h-screen bg-base-100 text-base-content overflow-x-hidden" x-data="layoutState" x-init="init()" @mousemove.window="doResize($event)" @mouseup.window="stopResize()" {
         (children)
-      </body>
-    </html>
+      }
+    }
   }
 }
