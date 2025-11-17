@@ -8,4 +8,4 @@ cd "$proj_dir" || exit 1
 
 sqlc generate
 
-cargo build --release
+cargo build

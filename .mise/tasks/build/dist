@@ -9,3 +9,7 @@ cd "$proj_dir" || exit 1
 sqlc generate
 
 cargo build --release
+
+mkdir -p dist
+cp -r target/frontend dist/public
+cp target/release/dainty dist/dainty
