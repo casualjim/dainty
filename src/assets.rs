@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use async_compression::tokio::write::BrotliEncoder;
 use axum::extract::Path;
@@ -17,7 +17,7 @@ const HASH_SPLIT_CHAR: char = '.';
 /// disk, as the cache stays in RAM for the life of the server.
 ///
 /// This type should be accessed via the `cache` property in `AppState`.
-pub struct AssetCache(HashMap<String, StaticAsset>);
+pub struct AssetCache(BTreeMap<String, StaticAsset>);
 
 impl AssetCache {
   /// Attempts to return a static asset from the cache from a cache key. If
@@ -78,7 +78,7 @@ impl AssetCache {
     base_path: Option<&std::path::Path>,
     extra_dirs: &[&std::path::Path],
   ) -> Self {
-    let mut cache = HashMap::default();
+    let mut cache = BTreeMap::default();
     let base_path = base_path
       .as_ref()
       .map_or(std::path::Path::new("target/frontend"), |p| p);
@@ -96,7 +96,7 @@ impl AssetCache {
 
     for (stored_path, bytes, ext, filename) in assets {
       let contents = match ext.as_str() {
-        "css" | "js" => compress_data(&bytes).await.unwrap_or_default(),
+        "css" | "js" => compress_data(&bytes).await.unwrap_or(Bytes::from(bytes)),
         _ => bytes.into(),
       };
 
