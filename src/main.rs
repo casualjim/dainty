@@ -9,14 +9,14 @@ async fn main() -> eyre::Result<()> {
     .install_default()
     .expect("Failed to install AWS LC crypto provider");
 
-  let _tracing_guard = bootstrap::logging::init()
+  let _tracing_guard = dainty::logging::init()
     .map_err(|e| {
       eprintln!("failed to initialize tracing: {e}");
       e
     })
     .expect("failed to initialize tracing");
 
-  bootstrap::init_propagation()?;
+  dainty::init_propagation()?;
   debug!("Initialized tracing");
 
   let app_cfg = load_config()?;

@@ -544,22 +544,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bootstrap"
-version = "0.1.7"
-source = "sparse+https://git.wagyu.icu/api/packages/pkg/cargo/"
-checksum = "07b733f8f16e1848897191978705d3dce9d71ceafe262f488b7acba9a16bf5e2"
-dependencies = [
- "eyre",
- "futures",
- "init-tracing-opentelemetry",
- "opentelemetry 0.31.0",
- "opentelemetry_sdk 0.31.0",
- "tracing",
- "tracing-opentelemetry",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "brotli"
 version = "8.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -655,9 +639,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.51"
+version = "4.5.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c26d721170e0295f191a69bd9a1f93efcdb0aff38684b61ab5750468972e5f5"
+checksum = "aa8120877db0e5c011242f96806ce3c94e0737ab8108532a76a3300a01db2ab8"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -665,9 +649,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.51"
+version = "4.5.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75835f0c7bf681bfd05abe44e965760fea999a5286c6eb2d59883634fd02011a"
+checksum = "02576b399397b659c26064fbc92a75fede9d18ffd5f80ca1cd74ddab167016e1"
 dependencies = [
  "anstream",
  "anstyle",
@@ -839,7 +823,6 @@ dependencies = [
  "axum-otel-metrics",
  "axum-server",
  "axum-tracing-opentelemetry",
- "bootstrap",
  "bytes",
  "clap",
  "confique",
@@ -848,11 +831,14 @@ dependencies = [
  "futures",
  "http",
  "hypertext",
+ "init-tracing-opentelemetry",
  "jiff",
  "listenfd",
  "maud",
  "mime_guess",
  "notify",
+ "opentelemetry 0.31.0",
+ "opentelemetry_sdk 0.31.0",
  "rmp-serde",
  "rustls",
  "rustls-acme",
@@ -872,6 +858,8 @@ dependencies = [
  "tower-sessions",
  "tower-sessions-core",
  "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
  "uuid",
  "walkdir",
 ]
@@ -1610,9 +1598,9 @@ dependencies = [
 
 [[package]]
 name = "init-tracing-opentelemetry"
-version = "0.32.1"
+version = "0.34.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3405b8beafca487bde01d88e05e6646c4e5c6a3c9830e7b937290ea8f7f5e5d9"
+checksum = "317b92661b729d90cce708de8a43cc7963fafe0710399f84299f9198a114fd4a"
 dependencies = [
  "opentelemetry 0.31.0",
  "opentelemetry-otlp",

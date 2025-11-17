@@ -39,5 +39,6 @@
 		"RUST_BACKTRACE": "full"
 	},
 	"rust-analyzer.testExplorer": true,
-	"rust-analyzer.cargo.features": []
+	"rust-analyzer.cargo.features": [],
+	"jdk.jdkhome": "/home/ivan/.local/share/mise/installs/java/25.0.1"
 }
