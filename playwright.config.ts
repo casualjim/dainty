@@ -32,14 +32,12 @@ export default defineConfig({
   webServer: {
     // Start the Rust server for e2e tests on port 3001. Using TEST_MODE to enable
     // dev/test behaviour in code if necessary.
-    command:
-      "TEST_MODE=true DAINTY_HTTP_PORT=3001 DATABASE_URL=postgresql://postgres:@localhost:5432/dainty_test cargo run",
+    command: "cargo run",
     port: 3001,
     reuseExistingServer: false,
     env: {
       TEST_MODE: "true",
       DAINTY_HTTP_PORT: "3001",
-      DATABASE_URL: "postgresql://postgres:@localhost:5432/dainty_test",
     },
   },
   projects: [
