@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 #MISE description="Generate code for SQL in Dainty"
+#MISE sources=["queries/*.sql", "sqlc.yaml"]
+#MISE outputs=["src/pgdb/**/*.rs"]
 
 echo "🚀 Starting Dainty SQL code generation..."
 proj_dir=$(git rev-parse --show-toplevel)
