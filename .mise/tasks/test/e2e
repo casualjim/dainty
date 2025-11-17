@@ -2,6 +2,7 @@
 
 #MISE description="Run the end-to-end tests for Dainty"
 #MISE sources=["Cargo.toml", "sqlc.yaml", "package.json", "src/**/*.rs", "assets/**"]
+#MISE depends=["build:debug"]
 
 echo "🚀 Starting Dainty E2E tests..."
 proj_dir=$(git rev-parse --show-toplevel)
