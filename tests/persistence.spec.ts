@@ -1,14 +1,16 @@
-import { expect, test } from "@playwright/test";
 import type { TestInfo } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const userIdFor = (testInfo: TestInfo) => `persistence-${testInfo.testId}`;
-const requestHeadersFor = (testInfo: TestInfo) => ({ headers: { "X-API-Key": userIdFor(testInfo) } });
+const requestHeadersFor = (testInfo: TestInfo) => ({
+  headers: { "X-API-Key": userIdFor(testInfo) },
+});
 
 test.describe("Layout state persistence", () => {
   test.beforeEach(async ({ page }, testInfo) => {
     await page.setExtraHTTPHeaders({ "X-API-Key": userIdFor(testInfo) });
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
   test("loads saved layout state from server", async ({ page }, testInfo) => {
@@ -17,27 +19,27 @@ test.describe("Layout state persistence", () => {
     await page.request.post("/api/layout", {
       headers: {
         "Content-Type": "application/json",
-        "X-API-Key": userId
+        "X-API-Key": userId,
       },
       data: {
         path: "/",
         left_sidebar_open: false,
         left_width: 400,
-        theme: "dark"
-      }
+        theme: "dark",
+      },
     });
 
     // Navigate with X-API-Key header
     await page.setExtraHTTPHeaders({ "X-API-Key": userId });
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
 
     // Check that state was loaded
     const leftSidebar = await page.locator('[aria-label="Left sidebar"]');
     await expect(leftSidebar).not.toBeVisible();
 
-    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-    expect(theme).toBe('dark');
+    const theme = await page.evaluate(() => document.documentElement.getAttribute("data-theme"));
+    expect(theme).toBe("dark");
   });
 
   test("persists sidebar toggle to server", async ({ page }, testInfo) => {
@@ -60,7 +62,7 @@ test.describe("Layout state persistence", () => {
 
     // Check the server state for this user
     const response = await page.request.get(`/api/layout?path=/&device=desktop`, {
-      headers: { "X-API-Key": userId }
+      headers: { "X-API-Key": userId },
     });
     const data = await response.json();
     expect(data.left_sidebar_open).toBe(false);
@@ -82,10 +84,10 @@ test.describe("Layout state persistence", () => {
 
     // Check server state for this user
     const response = await page.request.get(`/api/layout?path=/&device=desktop`, {
-      headers: { "X-API-Key": userId }
+      headers: { "X-API-Key": userId },
     });
     const data = await response.json();
-    expect(data.theme).toBe('dark');
+    expect(data.theme).toBe("dark");
   });
 
   test("persists resize width to server", async ({ page }, testInfo) => {
@@ -96,7 +98,7 @@ test.describe("Layout state persistence", () => {
     const leftSidebar = page.locator('[aria-label="Left sidebar"]');
     const resizeHandle = leftSidebar.locator('[data-resize-handle="left"]');
 
-    const initialWidth = await leftSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const initialWidth = await leftSidebar.evaluate((el) => el.getBoundingClientRect().width);
 
     // Drag resize handle
     const box = await resizeHandle.boundingBox();
@@ -112,7 +114,7 @@ test.describe("Layout state persistence", () => {
 
     // Check server state for this user
     const response = await page.request.get(`/api/layout?path=/&device=desktop`, {
-      headers: { "X-API-Key": userId }
+      headers: { "X-API-Key": userId },
     });
     const data = await response.json();
     expect(data.left_width).toBeGreaterThan(initialWidth);
@@ -131,7 +133,7 @@ test.describe("Layout state persistence", () => {
 
     // Reload
     await page.reload();
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
 
     // Should still be off
     const rightSidebar = page.locator('[aria-label="Right sidebar"]');
@@ -146,7 +148,7 @@ test.describe("Layout state persistence", () => {
         "Content-Type": "application/json",
         ...headers.headers,
       },
-      data: { path: "/", left_width: 500 }
+      data: { path: "/", left_width: 500 },
     });
 
     // Set state for /test path
@@ -155,17 +157,17 @@ test.describe("Layout state persistence", () => {
         "Content-Type": "application/json",
         ...headers.headers,
       },
-      data: { path: "/test", left_width: 600 }
+      data: { path: "/test", left_width: 600 },
     });
 
     // Verify root path
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
     await page.waitForTimeout(500);
 
-    let leftWidth = await page.evaluate(() => {
-      const Alpine = (window as any).Alpine;
-      const data = Alpine.$data(document.body);
+    const leftWidth = await page.evaluate(() => {
+      const Alpine = window.Alpine;
+      const data = Alpine.$data(document.body) as { leftWidth: number };
       return data.leftWidth;
     });
     expect(leftWidth).toBe(500);

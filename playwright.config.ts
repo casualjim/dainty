@@ -1,8 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const isCI = !!process.env['CI'];
+const isCI = !!process.env.CI;
 const retries = (() => {
-  const raw = process.env['PLAYWRIGHT_RETRIES'];
+  const raw = process.env.PLAYWRIGHT_RETRIES;
   if (raw === undefined) {
     return isCI ? 2 : 0;
   }
@@ -20,10 +20,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCI,
   retries,
-  reporter: [
-    ["list"],
-    ["html", { open: "never" }],
-  ],
+  reporter: [["list"], ["html", { open: "never" }]],
   use: {
     actionTimeout: 5_000,
     baseURL: "http://localhost:3001",
@@ -35,7 +32,8 @@ export default defineConfig({
   webServer: {
     // Start the Rust server for e2e tests on port 3001. Using TEST_MODE to enable
     // dev/test behaviour in code if necessary.
-    command: "TEST_MODE=true DAINTY_HTTP_PORT=3001 DATABASE_URL=postgresql://postgres:@localhost:5432/dainty_test cargo run",
+    command:
+      "TEST_MODE=true DAINTY_HTTP_PORT=3001 DATABASE_URL=postgresql://postgres:@localhost:5432/dainty_test cargo run",
     port: 3001,
     reuseExistingServer: false,
     env: {

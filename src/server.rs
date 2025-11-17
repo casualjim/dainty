@@ -494,10 +494,10 @@ fn static_file_handler(state: AppState) -> Router {
             HeaderValue::from_static(asset.ext().unwrap_or("")),
           );
 
-          if let Some(ext) = asset.ext() {
-            if let Some(mime) = mime_guess::from_ext(ext).first() {
-              headers.insert(CONTENT_TYPE, HeaderValue::from_str(mime.as_ref()).unwrap());
-            }
+          if let Some(ext) = asset.ext()
+            && let Some(mime) = mime_guess::from_ext(ext).first()
+          {
+            headers.insert(CONTENT_TYPE, HeaderValue::from_str(mime.as_ref()).unwrap());
           }
 
           if [Some("css"), Some("js")].contains(&asset.ext()) {

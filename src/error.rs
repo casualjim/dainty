@@ -36,7 +36,7 @@ impl AppError {
   }
 
   #[allow(unused)]
-  pub fn as_pair(self) -> (StatusCode, axum::Json<Self>) {
+  pub fn into_pair(self) -> (StatusCode, axum::Json<Self>) {
     (self.status, axum::Json(self))
   }
 }

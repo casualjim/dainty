@@ -1,43 +1,201 @@
 # dainty
 
+A modern web application built with Rust (Axum), PostgreSQL, and HTMX.
+
+## Prerequisites
+
+- [mise](https://mise.jdx.dev/) - Development environment manager
+- PostgreSQL database (local or remote)
+
+Mise will automatically install:
+- Rust toolchain with rust-analyzer
+- Node.js, Bun, and other development tools
+
 ## Setup
+
+1. Install all required tools and dependencies:
 
 ```bash
 mise install
-bun install
 ```
 
-## Run
+This will automatically install all development tools and run `bun install` via a postinstall hook.
+
+2. Configure your database connection:
+
+Create a `.env.json` file in the project root (or use environment variables):
+
+```json
+{
+  "DATABASE_URL": "postgresql://postgres:@localhost:5432/dainty",
+  "TEST_DATABASE_URL": "postgresql://postgres:@localhost:5432/dainty_test"
+}
+```
+
+3. Install Playwright browsers for E2E tests:
+
+```bash
+playwright install
+```
+
+## Development
+
+### Running the Development Server
+
+The development server includes hot-reload, automatic TLS certificate generation, and systemfd for zero-downtime restarts:
 
 ```bash
 mise dev
 ```
 
-## Tests
+This will:
+- Generate local TLS certificates using `mkcert` (first run only)
+- Start the server with `cargo watch` for hot-reload
+- Serve the application at `https://localhost:8080`
 
-This repository includes Playwright E2E tests under `tests/`.
+### Available Tasks
 
-Install dependencies (uses `mise` to ensure correct toolchain):
-
-```bash
-mise install
-bun install
-``` 
-
-Install Playwright browsers, then run tests:
+All development tasks are managed through `mise`. View all available tasks:
 
 ```bash
-playwright install
+mise tasks ls
+```
+
+#### Build Tasks
+
+- `mise build` - Release build with all optimizations (depends on tests)
+- `mise build:debug` - Debug build for development
+- `mise build:dist` - Create distribution package
+- `mise build:docker` - Build Docker image
+
+#### Test Tasks
+
+- `mise test` - Run all tests (Rust unit tests + E2E tests)
+- `mise test:rust` - Run Rust unit tests only
+- `mise test:e2e` - Run Playwright E2E tests only
+
+#### Code Generation
+
+- `mise generate:sql` - Generate Rust code from SQL queries using sqlc
+
+#### Development
+
+- `mise dev` - Run development server with hot-reload
+
+### Code Formatting
+
+Format all code (Rust, TypeScript, CSS):
+
+```bash
+mise format
+```
+
+**Important:** Always use `mise format`, never invoke `cargo fmt` or other formatters directly.
+
+## Testing
+
+### Rust Unit Tests
+
+Run Rust tests with nextest:
+
+```bash
+mise test:rust
+```
+
+### End-to-End Tests
+
+Run Playwright E2E tests:
+
+```bash
 mise test:e2e
 ```
 
-If you want Playwright to build and run the server via `cargo`, the `playwright.config.ts` will start the server on port `3001` during tests.
+The E2E tests will:
+- Reset the test database
+- Build and start the server automatically
+- Run browser-based tests against the running server
+
+### Run All Tests
+
+Run both Rust and E2E tests:
+
+```bash
+mise test
+```
+
+## Project Structure
+
+```
+src/
+  ├── main.rs              # Application entry point
+  ├── lib.rs               # Library exports
+  ├── app.rs               # Application state and setup
+  ├── server.rs            # Server configuration and startup
+  ├── config.rs            # Configuration management
+  ├── error.rs             # Error handling
+  ├── assets.rs            # Static asset handling
+  ├── routes/              # HTTP route handlers
+  │   ├── pages.rs         # Page routes
+  │   └── components.rs    # HTMX component routes
+  └── pgdb/                # Generated PostgreSQL code
+      ├── mod.rs
+      └── queries.rs       # Generated from queries/*.sql
+
+assets/
+  ├── css/                 # Stylesheets
+  └── js/                  # TypeScript/JavaScript
+
+queries/                   # SQL queries for sqlc
+migrations/                # Database migrations
+tests/                     # Playwright E2E tests
+.mise/                     # mise task definitions
+  └── tasks/
+      ├── build/
+      ├── test/
+      └── generate/
+```
 
 ## Troubleshooting
 
-If the lsp server doesn't want to start, it's likely that the rust-anaylyzer component hasn't been installed.
+### Mise install 401 unauthorized for aqua repos
+
+```sh
+export MISE_GITHUB_TOKEN=$(gh auth token)
+mise install
+```
+
+### Rust Analyzer Not Starting
+
+If the LSP server doesn't start, ensure the rust-analyzer component is installed:
 
 ```sh
 rustup component add llvm-tools rust-analyzer
+```
+
+Or reinstall via mise:
+
+```sh
+mise install rust
+```
+
+### Database Connection Issues
+
+Ensure PostgreSQL is running and the `DATABASE_URL` is correctly set in `.env.json` or your environment.
+
+### TLS Certificate Issues
+
+If you encounter certificate errors, delete the `.config/certs` directory and restart the dev server:
+
+```sh
+rm -rf .config/certs
+mise dev
+```
+
+### Playwright Browser Issues
+
+If E2E tests fail with browser errors, reinstall Playwright browsers:
+
+```sh
+playwright install
 ```
 

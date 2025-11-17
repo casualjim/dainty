@@ -13,7 +13,7 @@
     "dev": "mise dev"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@phosphor-icons/webcomponents": "^2.1.5",

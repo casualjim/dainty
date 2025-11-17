@@ -50,7 +50,7 @@ fn copy_files<S: Into<PathBuf>, D: Into<PathBuf>>(src: S, dst: D) {
   fs::create_dir_all(dest.as_path()).unwrap();
   let cloned_dir = dir.clone();
   let dir_name = cloned_dir.to_string_lossy();
-  for entry in std::fs::read_dir(dir).expect(&format!("failed to read dir {dir_name}")) {
+  for entry in std::fs::read_dir(dir).unwrap_or_else(|_| panic!("failed to read dir {dir_name}")) {
     let entry = entry.expect("failed to read entry");
     if entry.file_type().unwrap().is_dir() {
       copy_files(entry.path().to_str().unwrap(), dest.join(entry.file_name()));

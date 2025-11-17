@@ -7,6 +7,17 @@
       "type": "stdio",
       "disabled": false,
       "alwaysAllow": []
+    },
+    "typescript-lsp": {
+      "args": ["-y", "@p1va/symbols@latest", "run", "bunx", "-y", "typescript-language-server", "--stdio"],
+      "command": "bunx",
+      "env": {
+        "SYMBOLS_PRELOAD_FILES": "assets/js/main.ts",
+        "SYMBOLS_DIAGNOSTICS_STRATEGY": "push"
+      },
+      "type": "stdio",
+      "disabled": false,
+      "alwaysAllow": []
     }
   }
 }

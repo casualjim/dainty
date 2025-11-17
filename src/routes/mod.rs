@@ -32,6 +32,7 @@ where
 {
   type Rejection = Infallible;
 
+  #[allow(clippy::manual_async_fn)]
   fn from_request_parts(
     parts: &mut Parts,
     _state: &S,
@@ -85,7 +86,7 @@ pub fn router(app: AppState) -> Router<AppState> {
     .route("/api/layout", layout_route)
     .merge(pages::routes(app.clone()))
     .layer(AutoVaryLayer)
-    .layer(OtelInResponseLayer::default())
+    .layer(OtelInResponseLayer)
     .layer(OtelAxumLayer::default())
     .with_state(app)
 }

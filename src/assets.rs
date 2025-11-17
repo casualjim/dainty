@@ -42,9 +42,9 @@ impl AssetCache {
     let directory = parts.next().unwrap_or("");
 
     // Process the filename to get basename and extension
-    let mut file_parts = filename.split(|c| c == '.' || c == HASH_SPLIT_CHAR);
+    let mut file_parts = filename.split(['.', HASH_SPLIT_CHAR]);
     let basename = file_parts.next().unwrap_or_default();
-    let ext = file_parts.last().unwrap_or_default();
+    let ext = file_parts.next_back().unwrap_or_default();
 
     if directory.is_empty() {
       format!("{}.{}", basename, ext)
@@ -67,7 +67,7 @@ impl AssetCache {
 
         let stored_path = format!("static/{}", filename);
 
-        std::fs::read(&path)
+        std::fs::read(path)
           .ok()
           .map(|bytes| (stored_path, bytes, ext.to_string(), filename.to_string()))
       })

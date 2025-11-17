@@ -1,5 +1,5 @@
-import type Alpine from 'alpinejs';
-import type htmx from 'htmx.org';
+import type Alpine from "alpinejs";
+import type htmx from "htmx.org";
 
 declare global {
   interface Window {
@@ -7,5 +7,3 @@ declare global {
     htmx: typeof htmx;
   }
 }
-
-export {};

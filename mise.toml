@@ -4,10 +4,25 @@ bun = "latest"
 sops = "latest"
 rust = { version = "latest", profile = "default", components = "llvm-tools,rust-analyzer" }
 "cargo:systemfd" = "latest"
+"aqua:nextest-rs/nextest/cargo-nextest" = "latest"
 mkcert = "latest"
 node = "lts"
+"npm:typescript-language-server" = "latest"
+"go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "latest"
+hk = "latest"
+pkl = "latest"
+java = "latest"
+
 
 [env]
-SOPS_AGE_KEY_FILE="$HOME/.config/mise/age.txt"
 DATABASE_URL="postgresql://postgres:@localhost:5432/dainty"
 _.file = ".env.json"
+
+[settings]
+experimental = true
+
+[hooks]
+postinstall = [
+  "bun install",
+  "hk install --mise"
+]

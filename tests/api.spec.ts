@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import type { TestInfo } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const userIdFor = (testInfo: TestInfo) => `test-${testInfo.testId}`;
 
@@ -21,7 +21,12 @@ test.describe("API endpoints", () => {
         "Content-Type": "application/json",
         "X-API-Key": userId,
       },
-      data: { path: "/", device: "desktop", left_sidebar_open: false, theme: "dark" }
+      data: {
+        path: "/",
+        device: "desktop",
+        left_sidebar_open: false,
+        theme: "dark",
+      },
     });
 
     const response = await request.get("/api/layout?path=/&device=desktop", {
@@ -51,7 +56,7 @@ test.describe("API endpoints", () => {
       path: "/test",
       device: "desktop",
       left_sidebar_open: false,
-      left_width: 400
+      left_width: 400,
     };
 
     const postResponse = await request.post("/api/layout", {
@@ -59,7 +64,7 @@ test.describe("API endpoints", () => {
         "Content-Type": "application/json",
         "X-API-Key": userId,
       },
-      data: updatePayload
+      data: updatePayload,
     });
 
     expect(postResponse.ok()).toBeTruthy();
@@ -86,7 +91,7 @@ test.describe("API endpoints", () => {
         "Content-Type": "application/json",
         "X-API-Key": userId,
       },
-      data: { path: "/page1", left_width: 500 }
+      data: { path: "/page1", left_width: 500 },
     });
 
     // Update state for path /page2
@@ -95,7 +100,7 @@ test.describe("API endpoints", () => {
         "Content-Type": "application/json",
         "X-API-Key": userId,
       },
-      data: { path: "/page2", left_width: 600 }
+      data: { path: "/page2", left_width: 600 },
     });
 
     // Verify they are different
@@ -119,7 +124,7 @@ test.describe("API endpoints", () => {
         "Content-Type": "application/json",
         "X-API-Key": userId,
       },
-      data: "invalid json"
+      data: "invalid json",
     });
 
     // This should be a 400; failing test indicates server returns incorrect status
@@ -133,6 +138,6 @@ test.describe("API endpoints", () => {
     });
 
     expect(response.status()).toBe(405);
-    expect(response.headers()["allow"]).toBe("GET, POST");
+    expect(response.headers().allow).toBe("GET, POST");
   });
 });

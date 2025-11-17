@@ -1,18 +1,22 @@
-import { expect, test } from "@playwright/test";
 import type { TestInfo } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const userIdFor = (testInfo: TestInfo) => `layout-${testInfo.testId}`;
-const requestHeadersFor = (testInfo: TestInfo) => ({ headers: { "X-API-Key": userIdFor(testInfo) } });
+const requestHeadersFor = (testInfo: TestInfo) => ({
+  headers: { "X-API-Key": userIdFor(testInfo) },
+});
 
 test.describe("Left rail interactions", () => {
   test.beforeEach(async ({ page }, testInfo) => {
     await page.setExtraHTTPHeaders(requestHeadersFor(testInfo).headers);
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
   test("rail exposes the workspace icon buttons", async ({ page }) => {
-    const rail = page.getByRole("complementary", { name: "Workspace navigation" });
+    const rail = page.getByRole("complementary", {
+      name: "Workspace navigation",
+    });
     await expect(rail).toBeVisible();
     await expect(rail.getByLabel("Home workspace")).toBeVisible();
     await expect(rail.getByLabel("Shared spaces")).toBeVisible();
@@ -21,8 +25,8 @@ test.describe("Left rail interactions", () => {
   });
 
   test("avatar button toggles the profile menu", async ({ page }) => {
-    const dropdown = page.locator('[data-profile-dropdown]');
-    const toggle = dropdown.locator('summary');
+    const dropdown = page.locator("[data-profile-dropdown]");
+    const toggle = dropdown.locator("summary");
     const menu = dropdown.getByRole("menu");
 
     await expect(dropdown).not.toHaveAttribute("open", "");
@@ -40,8 +44,8 @@ test.describe("Left rail interactions", () => {
   });
 
   test("profile menu is positioned correctly on desktop", async ({ page }) => {
-    const dropdown = page.locator('[data-profile-dropdown]');
-    const toggle = dropdown.locator('summary');
+    const dropdown = page.locator("[data-profile-dropdown]");
+    const toggle = dropdown.locator("summary");
     const menu = dropdown.getByRole("menu");
 
     await toggle.click();
@@ -55,24 +59,23 @@ test.describe("Left rail interactions", () => {
 
     // Menu should be positioned near the toggle button
     // Check that menu appears below or to the side of the toggle
-    const isNearby = Math.abs(menuBox.x - toggleBox.x) < 200 &&
-                     Math.abs(menuBox.y - toggleBox.y) < 200;
+    const isNearby = Math.abs(menuBox.x - toggleBox.x) < 200 && Math.abs(menuBox.y - toggleBox.y) < 200;
     expect(isNearby).toBe(true);
   });
 });
 
 test.describe("Profile menu on mobile", () => {
   test.beforeEach(async ({ page }, testInfo) => {
-    await page.setViewportSize({ width: 375, height: 812 });
+    await page.setViewportSize({ width: 375, height: 667 });
     await page.setExtraHTTPHeaders(requestHeadersFor(testInfo).headers);
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
   test("profile menu is positioned correctly on mobile", async ({ page }) => {
     // On mobile, use the mobile-specific profile dropdown in the dock
-    const dropdown = page.locator('[data-profile-dropdown-mobile]');
-    const toggle = dropdown.locator('summary');
+    const dropdown = page.locator("[data-profile-dropdown-mobile]");
+    const toggle = dropdown.locator("summary");
     const menu = dropdown.getByRole("menu");
 
     await toggle.click();
@@ -105,7 +108,7 @@ test.describe("Sidebar interactions", () => {
   test.beforeEach(async ({ page }, testInfo) => {
     await page.setExtraHTTPHeaders(requestHeadersFor(testInfo).headers);
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
   test("left sidebar is visible by default", async ({ page }) => {
@@ -152,14 +155,14 @@ test.describe("Sidebar interactions", () => {
 
   test("left sidebar has correct default width", async ({ page }) => {
     const leftSidebar = page.locator('[aria-label="Left sidebar"]');
-    const width = await leftSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const width = await leftSidebar.evaluate((el) => el.getBoundingClientRect().width);
     expect(width).toBeGreaterThanOrEqual(290);
     expect(width).toBeLessThanOrEqual(330);
   });
 
   test("right sidebar has correct default width", async ({ page }) => {
     const rightSidebar = page.locator('[aria-label="Right sidebar"]');
-    const width = await rightSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const width = await rightSidebar.evaluate((el) => el.getBoundingClientRect().width);
     expect(width).toBeGreaterThanOrEqual(319);
     expect(width).toBeLessThanOrEqual(321);
   });
@@ -168,7 +171,7 @@ test.describe("Sidebar interactions", () => {
     const leftSidebar = page.locator('[aria-label="Left sidebar"]');
     const resizeHandle = leftSidebar.locator('[data-resize-handle="left"]');
 
-    const initialWidth = await leftSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const initialWidth = await leftSidebar.evaluate((el) => el.getBoundingClientRect().width);
 
     // Drag resize handle to the right
     const box = await resizeHandle.boundingBox();
@@ -179,7 +182,7 @@ test.describe("Sidebar interactions", () => {
     await page.mouse.move(box.x + 100, box.y + box.height / 2);
     await page.mouse.up();
 
-    const newWidth = await leftSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const newWidth = await leftSidebar.evaluate((el) => el.getBoundingClientRect().width);
     expect(newWidth).toBeGreaterThan(initialWidth);
   });
 
@@ -187,7 +190,7 @@ test.describe("Sidebar interactions", () => {
     const rightSidebar = page.locator('[aria-label="Right sidebar"]');
     const resizeHandle = rightSidebar.locator('[data-resize-handle="right"]');
 
-    const initialWidth = await rightSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const initialWidth = await rightSidebar.evaluate((el) => el.getBoundingClientRect().width);
 
     // Drag resize handle to the left
     const box = await resizeHandle.boundingBox();
@@ -198,7 +201,7 @@ test.describe("Sidebar interactions", () => {
     await page.mouse.move(box.x - 100, box.y + box.height / 2);
     await page.mouse.up();
 
-    const newWidth = await rightSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const newWidth = await rightSidebar.evaluate((el) => el.getBoundingClientRect().width);
     expect(newWidth).toBeGreaterThan(initialWidth);
   });
 
@@ -222,7 +225,7 @@ test.describe("Sidebar interactions", () => {
     const toggleButton = page.getByLabel("Toggle left sidebar").last(); // Desktop version
     await toggleButton.click();
     await expect(leftSidebar).toBeVisible();
-    const width = await leftSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const width = await leftSidebar.evaluate((el) => el.getBoundingClientRect().width);
     expect(width).toBeGreaterThanOrEqual(319);
     expect(width).toBeLessThanOrEqual(321);
   });
@@ -247,35 +250,35 @@ test.describe("Sidebar interactions", () => {
     const toggleButton = page.getByLabel("Toggle right sidebar").last(); // Desktop version
     await toggleButton.click();
     await expect(rightSidebar).toBeVisible();
-    const width = await rightSidebar.evaluate(el => el.getBoundingClientRect().width);
+    const width = await rightSidebar.evaluate((el) => el.getBoundingClientRect().width);
     expect(width).toBeGreaterThanOrEqual(319);
     expect(width).toBeLessThanOrEqual(321);
   });
 
   test("main content area is scrollable independently", async ({ page }) => {
     const mainContent = page.locator('[aria-label="Main content area"]');
-    const scrollable = await mainContent.evaluate(el => {
-      return el.scrollHeight > el.clientHeight ||
-             getComputedStyle(el).overflowY === 'auto' ||
-             getComputedStyle(el).overflowY === 'scroll';
+    const scrollable = await mainContent.evaluate((el) => {
+      return (
+        el.scrollHeight > el.clientHeight ||
+        getComputedStyle(el).overflowY === "auto" ||
+        getComputedStyle(el).overflowY === "scroll"
+      );
     });
     expect(scrollable).toBeTruthy();
   });
 
   test("left sidebar is scrollable independently", async ({ page }) => {
     const leftSidebar = page.locator('[aria-label="Left sidebar"]');
-    const scrollable = await leftSidebar.evaluate(el => {
-      return getComputedStyle(el).overflowY === 'auto' ||
-             getComputedStyle(el).overflowY === 'scroll';
+    const scrollable = await leftSidebar.evaluate((el) => {
+      return getComputedStyle(el).overflowY === "auto" || getComputedStyle(el).overflowY === "scroll";
     });
     expect(scrollable).toBeTruthy();
   });
 
   test("right sidebar is scrollable independently", async ({ page }) => {
     const rightSidebar = page.locator('[aria-label="Right sidebar"]');
-    const scrollable = await rightSidebar.evaluate(el => {
-      return getComputedStyle(el).overflowY === 'auto' ||
-             getComputedStyle(el).overflowY === 'scroll';
+    const scrollable = await rightSidebar.evaluate((el) => {
+      return getComputedStyle(el).overflowY === "auto" || getComputedStyle(el).overflowY === "scroll";
     });
     expect(scrollable).toBeTruthy();
   });
@@ -285,7 +288,7 @@ test.describe("Theme toggle interactions", () => {
   test.beforeEach(async ({ page }, testInfo) => {
     await page.setExtraHTTPHeaders(requestHeadersFor(testInfo).headers);
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
   test("theme toggle button is visible", async ({ page }) => {
@@ -334,7 +337,7 @@ test.describe("Theme toggle interactions", () => {
 
     // Reload page
     await page.reload();
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
     await page.waitForTimeout(200);
 
     // Should still be light theme in server state
@@ -371,7 +374,7 @@ test.describe("Resize handle visibility", () => {
   test.beforeEach(async ({ page }, testInfo) => {
     await page.setExtraHTTPHeaders(requestHeadersFor(testInfo).headers);
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
   test("left sidebar resize handle is visible", async ({ page }) => {
@@ -388,7 +391,7 @@ test.describe("Resize handle visibility", () => {
 
   test("resize handle has correct cursor style", async ({ page }) => {
     const leftHandle = page.locator('[data-resize-handle="left"]');
-    const cursor = await leftHandle.evaluate(el => getComputedStyle(el).cursor);
+    const cursor = await leftHandle.evaluate((el) => getComputedStyle(el).cursor);
     expect(cursor).toBe("col-resize");
   });
 });
@@ -398,16 +401,20 @@ test.describe("Mobile responsive behavior", () => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.setExtraHTTPHeaders(requestHeadersFor(testInfo).headers);
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
   test("left rail is hidden on mobile", async ({ page }) => {
-    const rail = page.getByRole("complementary", { name: "Workspace navigation" });
+    const rail = page.getByRole("complementary", {
+      name: "Workspace navigation",
+    });
     await expect(rail).not.toBeVisible();
   });
 
   test("mobile dock is visible", async ({ page }) => {
-    const dock = page.getByRole("navigation", { name: "Mobile workspace navigation" });
+    const dock = page.getByRole("navigation", {
+      name: "Mobile workspace navigation",
+    });
     await expect(dock).toBeVisible();
     await expect(dock.getByLabel("Home workspace")).toBeVisible();
     await expect(dock.getByLabel("Shared spaces")).toBeVisible();
@@ -446,7 +453,7 @@ test.describe("Mobile responsive behavior", () => {
     await expect(leftSidebar).toBeVisible();
 
     // Check it's positioned as fixed overlay
-    const position = await leftSidebar.evaluate(el => getComputedStyle(el).position);
+    const position = await leftSidebar.evaluate((el) => getComputedStyle(el).position);
     expect(position).toBe("fixed");
   });
 
@@ -460,12 +467,12 @@ test.describe("Mobile responsive behavior", () => {
     await expect(rightSidebar).toBeVisible();
 
     // Check it's positioned as fixed overlay
-    const position = await rightSidebar.evaluate(el => getComputedStyle(el).position);
+    const position = await rightSidebar.evaluate((el) => getComputedStyle(el).position);
     expect(position).toBe("fixed");
   });
 
   test("backdrop appears when left sidebar is open on mobile", async ({ page }) => {
-    const backdrop = page.locator('.bg-black\\/50');
+    const backdrop = page.locator(".bg-black\\/50");
     const toggleButton = page.getByLabel("Toggle left sidebar").first();
 
     await expect(backdrop).not.toBeVisible();
@@ -475,7 +482,7 @@ test.describe("Mobile responsive behavior", () => {
   });
 
   test("backdrop appears when right sidebar is open on mobile", async ({ page }) => {
-    const backdrop = page.locator('.bg-black\\/50');
+    const backdrop = page.locator(".bg-black\\/50");
     const toggleButton = page.getByLabel("Toggle right sidebar").first();
 
     await expect(backdrop).not.toBeVisible();
@@ -509,7 +516,7 @@ test.describe("Mobile responsive behavior", () => {
   });
 
   test("backdrop disappears when sidebar closes on mobile", async ({ page }) => {
-    const backdrop = page.locator('.bg-black\\/50');
+    const backdrop = page.locator(".bg-black\\/50");
     const toggleButton = page.getByLabel("Toggle left sidebar").first();
 
     await toggleButton.click();
@@ -523,15 +530,14 @@ test.describe("Mobile responsive behavior", () => {
     const leftSidebar = page.locator('[aria-label="Left sidebar"]');
     const rightSidebar = page.locator('[aria-label="Right sidebar"]');
     const leftToggle = page.getByLabel("Toggle left sidebar").first();
-    const rightToggle = page.getByLabel("Toggle right sidebar").first();
 
     await leftToggle.click();
     await expect(leftSidebar).toBeVisible();
     await expect(rightSidebar).not.toBeVisible();
     // Opening right sidebar should close left - use evaluate to trigger Alpine handler
     await page.evaluate(() => {
-      const Alpine = (window as any).Alpine;
-      const data = Alpine.$data(document.body);
+      const Alpine = window.Alpine;
+      const data = Alpine.$data(document.body) as { leftSidebar: boolean; rightSidebar: boolean };
       if (window.innerWidth < 1024 && !data.rightSidebar) data.leftSidebar = false;
       data.rightSidebar = !data.rightSidebar;
     });
@@ -549,8 +555,8 @@ test.describe("Mobile responsive behavior", () => {
 
     // Use evaluate to trigger Alpine handler
     await page.evaluate(() => {
-      const Alpine = (window as any).Alpine;
-      const data = Alpine.$data(document.body);
+      const Alpine = window.Alpine;
+      const data = Alpine.$data(document.body) as { leftSidebar: boolean };
       data.leftSidebar = !data.leftSidebar;
     });
 
@@ -562,7 +568,7 @@ test.describe("Desktop vs Mobile toggle buttons", () => {
   test.beforeEach(async ({ page }, testInfo) => {
     await page.setExtraHTTPHeaders(requestHeadersFor(testInfo).headers);
     await page.goto("/");
-    await page.waitForFunction(() => (window as any).Alpine !== undefined);
+    await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
   test("desktop uses panel icons, mobile uses menu icons", async ({ page }) => {
