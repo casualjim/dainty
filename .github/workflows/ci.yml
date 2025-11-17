@@ -44,7 +44,7 @@ jobs:
 
       - name: Run build dist
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dainty_test
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dainty_test
         run: mise build:dist
 
       - name: Set up Docker Buildx
