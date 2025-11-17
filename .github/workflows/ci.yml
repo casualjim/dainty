@@ -21,6 +21,7 @@ jobs:
         image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
           POSTGRES_DB: dainty_test
         options: >-
           --health-cmd pg_isready
@@ -42,6 +43,8 @@ jobs:
           cache: true
 
       - name: Run build dist
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dainty_test
         run: mise build:dist
 
       - name: Set up Docker Buildx
