@@ -4,5 +4,5 @@
 node_modules
 test-results
 playwright*
-!playwright.config.ts
+!playwright.config.ts*
 /dist

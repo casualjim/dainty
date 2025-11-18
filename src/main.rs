@@ -1,4 +1,4 @@
-use dainty::{load_config, server};
+use {{crate_name}}::{load_config, server};
 use tokio::signal;
 use tokio_util::sync::CancellationToken;
 use tracing::{debug, error, info};
@@ -9,14 +9,14 @@ async fn main() -> eyre::Result<()> {
     .install_default()
     .expect("Failed to install AWS LC crypto provider");
 
-  let _tracing_guard = dainty::logging::init()
+  let _tracing_guard = {{crate_name}}::logging::init()
     .map_err(|e| {
       eprintln!("failed to initialize tracing: {e}");
       e
     })
     .expect("failed to initialize tracing");
 
-  dainty::init_propagation()?;
+  {{crate_name}}::init_propagation()?;
   debug!("Initialized tracing");
 
   let app_cfg = load_config()?;

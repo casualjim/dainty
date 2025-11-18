@@ -37,7 +37,8 @@ export default defineConfig({
     reuseExistingServer: false,
     env: {
       TEST_MODE: "true",
-      DAINTY_HTTP_PORT: "3001",
+      "{{project-name | shouty_snake_case}}_HTTP_PORT": "3001",
+      RUST_LOG: "debug",
     },
   },
   projects: [

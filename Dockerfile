@@ -10,4 +10,4 @@ USER appuser
 # Expose server port (configurable via EXPOSE_PORT build arg)
 ARG PORT=8080
 EXPOSE $PORT
-ENTRYPOINT ["/app/dainty"]
+ENTRYPOINT ["/app/{{project-name}}"]
