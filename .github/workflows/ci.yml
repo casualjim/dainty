@@ -68,6 +68,7 @@ jobs:
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_project_test
         run: |
+          # There are symlinks that don't get copied over by cargo-generate, so we need to reinstall dependencies
           bun install
           bunx playwright install --with-deps
           mise test:e2e
