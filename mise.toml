@@ -2,7 +2,7 @@
 age = "latest"
 bun = "latest"
 sops = "latest"
-rust = { version = "latest", profile = "default", components = "llvm-tools,rust-analyzer,rustfmt,cargo-clippy" }
+rust = { version = "latest", profile = "default", components = "llvm-tools,rust-analyzer,rustfmt,clippy" }
 "ubi:cargo-bins/cargo-binstall" = "latest"
 "cargo:systemfd" = "latest"
 "cargo:cargo-sort" = "latest"
