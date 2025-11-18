@@ -19,15 +19,24 @@ pub struct AppConfig {
 #[derive(confique::Config, Debug, Clone)]
 pub struct Server {
   // Networking
-  #[config(default = 8080, env = "DAINTY_HTTP_PORT")]
+  #[config(default = 8080, env = "{{project-name | shouty_snake_case}}_HTTP_PORT")]
   pub http_port: u16,
-  #[config(default = 8443, env = "DAINTY_HTTPS_PORT")]
+  #[config(
+    default = 8443,
+    env = "{{project-name | shouty_snake_case}}_HTTPS_PORT"
+  )]
   pub https_port: u16,
-  #[config(default = 9090, env = "DAINTY_MONITORING_PORT")]
+  #[config(
+    default = 9090,
+    env = "{{project-name | shouty_snake_case}}_MONITORING_PORT"
+  )]
   pub monitoring_port: u16,
 
   // TLS toggle
-  #[config(default = false, env = "DAINTY_TLS_ENABLED")]
+  #[config(
+    default = false,
+    env = "{{project-name | shouty_snake_case}}_TLS_ENABLED"
+  )]
   pub tls_enabled: bool,
 
   // TLS/ACME configuration (optional)
@@ -102,8 +111,8 @@ where
   let mut cfg = AppConfig::builder()
     .env()
     .file("config/local.toml")
-    .file("/etc/slipstream/secrets.toml")
-    .file("/etc/slipstream/config.toml")
+    .file("/etc/{{project-name}}/secrets.toml")
+    .file("/etc/{{project-name}}/config.toml")
     .file("config/default.toml")
     .load()
     .map_err(|e| eyre::eyre!(e.to_string()))?;
@@ -181,7 +190,7 @@ mod tests {
   }
 
   fn write_temp_toml(contents: &str) -> PathBuf {
-    let dir = env::temp_dir().join(format!("slipstream-test-{}", Uuid::now_v7()));
+    let dir = env::temp_dir().join(format!("{{project-name}}-test-{}", Uuid::now_v7()));
     fs::create_dir_all(&dir).unwrap();
     let path = dir.join("config.toml");
     fs::write(&path, contents).unwrap();
@@ -204,7 +213,7 @@ mod tests {
       env::set_var("NATS_URL", "nats://localhost:4222");
       env::set_var(
         "DATABASE_URL",
-        "postgres://postgres:password@localhost:5432/slipstream",
+        "postgres://postgres:password@localhost:5432/{{database_name}}",
       );
     }
     let out = f();
@@ -263,7 +272,7 @@ http_port = 18080
     );
 
     unsafe {
-      env::set_var("DAINTY_HTTP_PORT", "28080");
+      env::set_var("{{project-name | shouty_snake_case}}_HTTP_PORT", "28080");
     }
 
     let cfg = with_min_uploads_env(|| AppConfig::builder().env().file(&path).load().unwrap());
@@ -271,7 +280,7 @@ http_port = 18080
     assert_eq!(cfg.server.http_port, 28080);
 
     unsafe {
-      env::remove_var("DAINTY_HTTP_PORT");
+      env::remove_var("{{project-name | shouty_snake_case}}_HTTP_PORT");
     }
   }
 
@@ -279,17 +288,17 @@ http_port = 18080
   fn cli_overrides_env() {
     let _g = env_lock();
     unsafe {
-      env::set_var("DAINTY_HTTP_PORT", "28080");
+      env::set_var("{{project-name | shouty_snake_case}}_HTTP_PORT", "28080");
     }
 
     let cfg = with_min_uploads_env(|| {
-      super::load_config_with_args(["slipstream-server", "--http-port", "38080"]).unwrap()
+      super::load_config_with_args(["{{project-name}}-server", "--http-port", "38080"]).unwrap()
     });
 
     assert_eq!(cfg.server.http_port, 38080);
 
     unsafe {
-      env::remove_var("DAINTY_HTTP_PORT");
+      env::remove_var("{{project-name | shouty_snake_case}}_HTTP_PORT");
     }
   }
 }

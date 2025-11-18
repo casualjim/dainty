@@ -1,5 +1,5 @@
 {
-  "name": "dainty",
+  "name": "{{project-name}}",
   "type": "module",
   "private": true,
   "devDependencies": {

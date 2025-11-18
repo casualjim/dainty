@@ -1,6 +1,16 @@
-# dainty
+# {{project-name}}
 
-A modern web application built with Rust (Axum), PostgreSQL, and HTMX.
+{{project_description}}
+
+## Features
+
+**Full-Stack Components:**
+- ✅ **Backend** - Rust/Axum web server with PostgreSQL, session management, and TLS support
+- ✅ **Frontend** - HTMX + Alpine.js + Tailwind CSS 4 + DaisyUI for modern, reactive UIs
+- ✅ **E2E Testing** - Playwright tests with automatic server lifecycle management
+- ✅ **Build Automation** - Mise task runner for development, testing, and deployment
+- ✅ **Deployment** - Docker containerization with multi-stage builds
+- ✅ **Development Tooling** - LSP servers, hot-reload, code formatting, and SQL code generation
 
 ## Prerequisites
 
@@ -27,8 +37,8 @@ Create a `.env.json` file in the project root (or use environment variables):
 
 ```json
 {
-  "DATABASE_URL": "postgresql://postgres:@localhost:5432/dainty",
-  "TEST_DATABASE_URL": "postgresql://postgres:@localhost:5432/dainty_test"
+  "DATABASE_URL": "postgresql://postgres:@localhost:5432/{{database_name}}",
+  "TEST_DATABASE_URL": "postgresql://postgres:@localhost:5432/{{database_name}}_test"
 }
 ```
 
@@ -198,4 +208,5 @@ If E2E tests fail with browser errors, reinstall Playwright browsers:
 ```sh
 playwright install
 ```
+
 
