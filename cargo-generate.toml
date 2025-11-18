@@ -1,7 +1,6 @@
 [template]
 cargo_generate_version = ">=0.18.0"
 init = true
-vcs = "git"
 
 [placeholders.project_description]
 type = "string"
