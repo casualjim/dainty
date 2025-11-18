@@ -2,9 +2,9 @@ name: Template CI
 
 on:
   push:
-    branches: [main, template]
+    branches: [main]
   pull_request:
-    branches: [main, template]
+    branches: [main]
 
 jobs:
   test-template:
