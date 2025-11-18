@@ -50,8 +50,15 @@ jobs:
         working-directory: ../test-project
         run: mise install
 
+      - name: Ensure compilation works
+        run: mise build:debug
+
+      - name: Ensure rust toolchain is correct
+        working-directory: ../test-project
+        run: rustup component add llvm-tools rust-analyzer rustfmt
+
       - name: Check formatting
-        run: mise trust && mise format
+        run: mise format
         working-directory: ../test-project
 
       - name: Run unit tests
