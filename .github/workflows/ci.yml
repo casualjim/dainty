@@ -36,15 +36,19 @@ jobs:
       - name: Install cargo-generate
         run: cargo binstall cargo-generate
 
+
+      - name: Setup mise in generated project
+        uses: jdx/mise-action@v3
+        with:
+          install: false
+
       - name: Generate project from template
         run: |
           cd ..
           cargo generate --path ./dainty --name test-project \
+            --allow-commands \
             -d project_description="Test project generated from template" \
             -d database_name="test_project"
-
-      - name: Setup mise in generated project
-        uses: jdx/mise-action@v3
 
       - name: Install dependencies
         working-directory: ../test-project

@@ -4,7 +4,9 @@ This document provides guidance on customizing your project after generating it 
 
 ## Post-Generation Checklist
 
-After running `cargo generate casualjim/dainty`, follow these steps:
+After running `cargo generate casualjim/dainty --allow-commands`, follow these steps:
+
+> **Note:** The `--allow-commands` flag allows the template to automatically run `mise trust` and `mise install` after generation, setting up your development environment immediately.
 
 ### 1. Configure Your Database
 
