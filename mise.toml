@@ -4,6 +4,7 @@ bun = "latest"
 sops = "latest"
 rust = { version = "latest", profile = "default", components = "llvm-tools,rust-analyzer" }
 "cargo:systemfd" = "latest"
+"cargo:cargo-sort" = "latest"
 "aqua:nextest-rs/nextest/cargo-nextest" = "latest"
 mkcert = "latest"
 node = "lts"
