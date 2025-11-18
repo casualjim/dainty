@@ -45,10 +45,10 @@ jobs:
 
       - name: Setup mise in generated project
         uses: jdx/mise-action@v3
-        with:
-          experimental: true
-          install: true
-          cache: true
+
+      - name: Install dependencies
+        working-directory: ../test-project
+        run: mise install
 
       - name: Check formatting
         run: mise trust && mise format
