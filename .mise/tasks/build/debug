@@ -2,7 +2,7 @@
 
 #MISE description="Build the {{ project-name | capitalize }} application (Debug)"
 #MISE sources=["Cargo.toml", "sqlc.yaml", "src/**/*.rs", "assets/**", "queries"]
-#MISE outputs=["target/debug/{{ crate_name }}", "target/frontend/**"]
+#MISE outputs=["target/debug/{{ project-name }}", "target/frontend/**"]
 #MISE depends=["generate:sql"]
 
 echo "🚀 Starting {{ project-name | capitalize }} debug build..."

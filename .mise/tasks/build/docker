@@ -8,4 +8,4 @@ echo "🚀 Starting {{ project-name | capitalize }} release build..."
 proj_dir=$(git rev-parse --show-toplevel)
 cd "$proj_dir" || exit 1
 
-docker build --pull -t ghcr.io/casualjim/{{ crate_name }}:latest -f Dockerfile .
+docker build --pull -t ghcr.io/casualjim/{{ project-name }}:latest -f Dockerfile .
