@@ -185,7 +185,7 @@ rustup component add llvm-tools rust-analyzer
 Or reinstall via mise:
 
 ```sh
-mise install rust
+mise use rust
 ```
 
 ### Database Connection Issues

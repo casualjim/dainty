@@ -6,12 +6,6 @@ use std::path::PathBuf;
 pub struct AppConfig {
   #[config(nested)]
   pub server: Server,
-  // #[config(nested)]
-  // pub memory: Memory,
-  // #[config(nested)]
-  // pub restate: Restate,
-  // #[config(nested)]
-  // pub nats: Nats,
   #[config(nested)]
   pub postgres: Postgres,
 }
@@ -51,12 +45,6 @@ pub struct Server {
   pub tls_key: Option<PathBuf>,
   pub tls_cert: Option<PathBuf>,
 }
-
-// #[derive(confique::Config, Debug, Clone)]
-// pub struct Memory {
-//   #[config(default = "memory.db", env = "DAINTY_MEMORY__PATH")]
-//   pub path: String,
-// }
 
 #[derive(Debug, Parser, Default, Clone)]
 struct CliArgs {
@@ -141,32 +129,6 @@ where
   Ok(cfg)
 }
 
-// #[derive(confique::Config, Debug, Clone)]
-// pub struct Restate {
-//   #[config(env = "RESTATE_INVOKE_URL")]
-//   pub invoke_url: String,
-//   #[config(env = "RESTATE_ADMIN_URL")]
-//   pub admin_url: String,
-//   #[config(env = "RESTATE_API_KEY")]
-//   pub api_key: Option<secrecy::SecretString>,
-// }
-
-// #[derive(confique::Config, Debug, Clone, Default)]
-// pub struct Nats {
-//   #[config(env = "NATS_URL")]
-//   pub url: String,
-//   #[config(env = "NATS_CREDS")]
-//   pub creds: Option<PathBuf>,
-//   #[config(default = false, env = "NATS_TLS_FIRST")]
-//   pub tls_first: bool,
-//   #[config(env = "NATS_CLIENT_CERT")]
-//   pub client_cert: Option<PathBuf>,
-//   #[config(env = "NATS_CLIENT_KEY")]
-//   pub client_key: Option<PathBuf>,
-//   #[config(env = "NATS_CA_CERT")]
-//   pub ca_cert: Option<PathBuf>,
-// }
-
 #[derive(confique::Config, Debug, Clone)]
 pub struct Postgres {
   #[config(env = "DATABASE_URL")]
@@ -198,19 +160,11 @@ mod tests {
   }
 
   // Provide minimal uploads env so AppConfig can load without altering defaults.
-  fn with_min_uploads_env<F, R>(f: F) -> R
+  fn with_test_env<F, R>(f: F) -> R
   where
     F: FnOnce() -> R,
   {
     unsafe {
-      env::set_var("UPLOADS_BUCKET", "test-bucket");
-      env::set_var("UPLOADS_ENDPOINT", "http://127.0.0.1:9000");
-      env::set_var("UPLOADS_REGION", "us-east-1");
-      env::set_var("UPLOADS_ACCESS_KEY_ID", "minioadmin");
-      env::set_var("UPLOADS_SECRET_ACCESS_KEY", "minioadmin");
-      env::set_var("RESTATE_INVOKE_URL", "http://localhost:8424");
-      env::set_var("RESTATE_ADMIN_URL", "http://localhost:9070");
-      env::set_var("NATS_URL", "nats://localhost:4222");
       env::set_var(
         "DATABASE_URL",
         "postgres://postgres:password@localhost:5432/{{database_name}}",
@@ -218,14 +172,6 @@ mod tests {
     }
     let out = f();
     unsafe {
-      env::remove_var("UPLOADS_BUCKET");
-      env::remove_var("UPLOADS_ENDPOINT");
-      env::remove_var("UPLOADS_REGION");
-      env::remove_var("UPLOADS_ACCESS_KEY_ID");
-      env::remove_var("UPLOADS_SECRET_ACCESS_KEY");
-      env::remove_var("RESTATE_INVOKE_URL");
-      env::remove_var("RESTATE_ADMIN_URL");
-      env::remove_var("NATS_URL");
       env::remove_var("DATABASE_URL");
     }
     out
@@ -235,7 +181,7 @@ mod tests {
   fn config_defaults_when_no_sources() {
     // No files, CLI empty. We set only uploads env to satisfy required fields.
     let _g = env_lock();
-    let cfg = with_min_uploads_env(|| AppConfig::builder().env().load().unwrap());
+    let cfg = with_test_env(|| AppConfig::builder().env().load().unwrap());
     assert_eq!(cfg.server.http_port, 8080);
     assert_eq!(cfg.server.https_port, 8443);
     assert_eq!(cfg.server.monitoring_port, 9090);
@@ -254,7 +200,7 @@ tls_enabled = true
 "#,
     );
 
-    let cfg = with_min_uploads_env(|| AppConfig::builder().env().file(&path).load().unwrap());
+    let cfg = with_test_env(|| AppConfig::builder().env().file(&path).load().unwrap());
 
     assert_eq!(cfg.server.http_port, 18080);
     assert_eq!(cfg.server.https_port, 18443);
@@ -275,7 +221,7 @@ http_port = 18080
       env::set_var("{{project-name | shouty_snake_case}}_HTTP_PORT", "28080");
     }
 
-    let cfg = with_min_uploads_env(|| AppConfig::builder().env().file(&path).load().unwrap());
+    let cfg = with_test_env(|| AppConfig::builder().env().file(&path).load().unwrap());
 
     assert_eq!(cfg.server.http_port, 28080);
 
@@ -291,7 +237,7 @@ http_port = 18080
       env::set_var("{{project-name | shouty_snake_case}}_HTTP_PORT", "28080");
     }
 
-    let cfg = with_min_uploads_env(|| {
+    let cfg = with_test_env(|| {
       super::load_config_with_args(["{{project-name}}-server", "--http-port", "38080"]).unwrap()
     });
 

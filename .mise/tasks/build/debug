@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-#MISE description="Build the Dainty application (Debug)"
+#MISE description="Build the {{ project-name | capitalize }} application (Debug)"
 #MISE sources=["Cargo.toml", "sqlc.yaml", "src/**/*.rs", "assets/**", "queries"]
-#MISE outputs=["target/debug/dainty", "target/frontend/**"]
+#MISE outputs=["target/debug/{{ crate_name }}", "target/frontend/**"]
 #MISE depends=["generate:sql"]
 
-echo "🚀 Starting Dainty debug build..."
+echo "🚀 Starting {{ project-name | capitalize }} debug build..."
 proj_dir=$(git rev-parse --show-toplevel)
 cd "$proj_dir" || exit 1
 
