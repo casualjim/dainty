@@ -1,5 +1,7 @@
 [template]
 cargo_generate_version = ">=0.18.0"
+init = true
+vcs = "git"
 
 [placeholders.project_description]
 type = "string"
@@ -10,3 +12,6 @@ default = "A full-stack Rust web application"
 type = "string"
 prompt = "Database name"
 default = "{{project-name | snake_case}}"
+
+[hooks]
+post = ["post-setup.rhai"]
