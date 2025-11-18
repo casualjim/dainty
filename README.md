@@ -1,6 +1,6 @@
-# {{project-name}}
+# Dainty - Full-Stack Rust Web Application Template
 
-{{project_description}}
+A modern, production-ready template for building full-stack web applications with Rust, HTMX, Alpine.js, and PostgreSQL.
 
 ## Features
 
@@ -12,201 +12,94 @@
 - ✅ **Deployment** - Docker containerization with multi-stage builds
 - ✅ **Development Tooling** - LSP servers, hot-reload, code formatting, and SQL code generation
 
-## Prerequisites
+## Quick Start
 
-- [mise](https://mise.jdx.dev/) - Development environment manager
+### Prerequisites
+
+- [cargo-generate](https://github.com/cargo-generate/cargo-generate) - Template generator
+- [mise](https://mise.jdx.dev/) - Development environment manager (will be installed in generated project)
 - PostgreSQL database (local or remote)
 
-Mise will automatically install:
-- Rust toolchain with rust-analyzer
-- Node.js, Bun, and other development tools
-
-## Setup
-
-1. Install all required tools and dependencies:
+### Generate a New Project
 
 ```bash
-mise install
+cargo generate casualjim/dainty --allow-commands
 ```
 
-This will automatically install all development tools and run `bun install` via a postinstall hook.
+The `--allow-commands` flag enables automatic setup:
+- Trusts the mise configuration
+- Installs all development tools and dependencies
+- Runs `bun install` for frontend dependencies
 
-2. Configure your database connection:
+You'll be prompted for:
+- **Project name** - Your project name (kebab-case)
+- **Project description** - Brief description of your project
+- **Database name** - PostgreSQL database name (defaults to project name in snake_case)
 
-Create a `.env.json` file in the project root (or use environment variables):
+### After Generation
 
-```json
-{
-  "DATABASE_URL": "postgresql://postgres:@localhost:5432/{{database_name}}",
-  "TEST_DATABASE_URL": "postgresql://postgres:@localhost:5432/{{database_name}}_test"
-}
-```
+1. **Configure your database** - Create a `.env.json` file with your database URLs
+2. **Install Playwright browsers** - Run `bunx playwright install`
+3. **Create databases** - Set up your PostgreSQL databases
+4. **Run migrations** - Apply database migrations with `sqlx migrate run`
+5. **Start developing** - Run `mise dev` to start the development server
 
-3. Install Playwright browsers for E2E tests:
+See the generated project's README for detailed setup instructions.
 
-```bash
-playwright install
-```
+## What You Get
 
-## Development
+### Backend Stack
+- **Axum** - Fast, ergonomic web framework
+- **PostgreSQL** - Robust relational database with TimescaleDB
+- **SQLx** - Compile-time checked SQL queries
+- **Tower** - Modular service middleware
+- **Session Management** - PostgreSQL-backed sessions
+- **TLS Support** - Auto-generated certificates for local development
 
-### Running the Development Server
+### Frontend Stack
+- **HTMX** - Hypermedia-driven interactions
+- **Alpine.js** - Lightweight JavaScript framework
+- **Tailwind CSS 4** - Utility-first CSS with oxide engine
+- **DaisyUI** - Beautiful component library
+- **Asset Pipeline** - Optimized bundling and serving
 
-The development server includes hot-reload, automatic TLS certificate generation, and systemfd for zero-downtime restarts:
+### Development Tools
+- **Mise** - Task runner and tool version manager
+- **cargo-nextest** - Fast, modern test runner
+- **Playwright** - Reliable E2E testing
+- **sqlc** - Type-safe SQL code generation
+- **Biome** - Fast formatter and linter
+- **Docker** - Production-ready containerization
 
-```bash
-mise dev
-```
-
-This will:
-- Generate local TLS certificates using `mkcert` (first run only)
-- Start the server with `cargo watch` for hot-reload
-- Serve the application at `https://localhost:8080`
-
-### Available Tasks
-
-All development tasks are managed through `mise`. View all available tasks:
-
-```bash
-mise tasks ls
-```
-
-#### Build Tasks
-
-- `mise build` - Release build with all optimizations (depends on tests)
-- `mise build:debug` - Debug build for development
-- `mise build:dist` - Create distribution package
-- `mise build:docker` - Build Docker image
-
-#### Test Tasks
-
-- `mise test` - Run all tests (Rust unit tests + E2E tests)
-- `mise test:rust` - Run Rust unit tests only
-- `mise test:e2e` - Run Playwright E2E tests only
-
-#### Code Generation
-
-- `mise generate:sql` - Generate Rust code from SQL queries using sqlc
-
-#### Development
-
-- `mise dev` - Run development server with hot-reload
-
-### Code Formatting
-
-Format all code (Rust, TypeScript, CSS):
-
-```bash
-mise format
-```
-
-**Important:** Always use `mise format`, never invoke `cargo fmt` or other formatters directly.
-
-## Testing
-
-### Rust Unit Tests
-
-Run Rust tests with nextest:
-
-```bash
-mise test:rust
-```
-
-### End-to-End Tests
-
-Run Playwright E2E tests:
-
-```bash
-mise test:e2e
-```
-
-The E2E tests will:
-- Reset the test database
-- Build and start the server automatically
-- Run browser-based tests against the running server
-
-### Run All Tests
-
-Run both Rust and E2E tests:
-
-```bash
-mise test
-```
-
-## Project Structure
+## Template Structure
 
 ```
-src/
-  ├── main.rs              # Application entry point
-  ├── lib.rs               # Library exports
-  ├── app.rs               # Application state and setup
-  ├── server.rs            # Server configuration and startup
-  ├── config.rs            # Configuration management
-  ├── error.rs             # Error handling
-  ├── assets.rs            # Static asset handling
-  ├── routes/              # HTTP route handlers
-  │   ├── pages.rs         # Page routes
-  │   └── components.rs    # HTMX component routes
-  └── pgdb/                # Generated PostgreSQL code
-      ├── mod.rs
-      └── queries.rs       # Generated from queries/*.sql
-
-assets/
-  ├── css/                 # Stylesheets
-  └── js/                  # TypeScript/JavaScript
-
-queries/                   # SQL queries for sqlc
-migrations/                # Database migrations
-tests/                     # Playwright E2E tests
-.mise/                     # mise task definitions
-  └── tasks/
-      ├── build/
-      ├── test/
-      └── generate/
+your-project/
+├── src/              # Rust source code
+│   ├── routes/       # HTTP route handlers
+│   ├── pgdb/         # Database models and queries
+│   └── ...
+├── assets/           # Frontend assets
+│   ├── css/          # Tailwind CSS
+│   └── js/           # TypeScript/Alpine.js
+├── migrations/       # Database migrations
+├── queries/          # SQL queries (sqlc)
+├── tests/            # E2E tests (Playwright)
+├── mise.toml         # Development tasks and tools
+└── Dockerfile        # Production container
 ```
 
-## Troubleshooting
+## Customization
 
-### Mise install 401 unauthorized for aqua repos
+The template includes:
+- **Placeholders** - Project name, description, database name auto-configured
+- **Git initialization** - New repository created automatically
+- **Post-generation hooks** - Automatic setup of mise and dependencies
 
-```sh
-export MISE_GITHUB_TOKEN=$(gh auth token)
-mise install
-```
+## License
 
-### Rust Analyzer Not Starting
+This template is licensed under the MIT License. Generated projects can use any license you choose.
 
-If the LSP server doesn't start, ensure the rust-analyzer component is installed:
+## Contributing
 
-```sh
-rustup component add llvm-tools rust-analyzer
-```
-
-Or reinstall via mise:
-
-```sh
-mise use rust
-```
-
-### Database Connection Issues
-
-Ensure PostgreSQL is running and the `DATABASE_URL` is correctly set in `.env.json` or your environment.
-
-### TLS Certificate Issues
-
-If you encounter certificate errors, delete the `.config/certs` directory and restart the dev server:
-
-```sh
-rm -rf .config/certs
-mise dev
-```
-
-### Playwright Browser Issues
-
-If E2E tests fail with browser errors, reinstall Playwright browsers:
-
-```sh
-playwright install
-```
-
-
+Contributions welcome! Please open an issue or PR on GitHub.

@@ -36,7 +36,6 @@ jobs:
       - name: Install cargo-generate
         run: cargo binstall cargo-generate
 
-
       - name: Setup mise in generated project
         uses: jdx/mise-action@v3
         with:
