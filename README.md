@@ -30,6 +30,7 @@ The `--allow-commands` flag enables automatic setup:
 - Trusts the mise configuration
 - Installs all development tools and dependencies
 - Runs `bun install` for frontend dependencies
+- Ensures the necessary rustup components get installed
 
 You'll be prompted for:
 - **Project name** - Your project name (kebab-case)
