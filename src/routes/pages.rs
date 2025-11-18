@@ -90,7 +90,7 @@ async fn index_page(hx_request: HxRequest) -> impl IntoResponse {
                   i x-show="leftSidebar" data-lucide="panel-left-close" class="w-4 h-4" {}
                   i x-show="!leftSidebar" data-lucide="panel-left-open" class="w-4 h-4" {}
                 }
-                div class="text-xl font-semibold leading-tight" { "Dainty" }
+                div class="text-xl font-semibold leading-tight" { "{{project-name}}" }
                 span class="badge badge-outline badge-primary" { "Workspace" }
               }
               div class="flex items-center gap-2" {

@@ -31,7 +31,7 @@ pub fn document<R: Renderable>(children: &R) -> impl Renderable {
       head {
         meta charset="utf-8";
         meta name="viewport" content="width=device-width, initial-scale=1";
-        title { "Dainty" }
+        title { "{{project-name}}" }
         link rel="stylesheet" href="/static/css/main.css";
         script src="/static/js/main.js" defer=true type="module" {}
       }
