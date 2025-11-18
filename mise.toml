@@ -2,7 +2,7 @@
 age = "latest"
 bun = "latest"
 sops = "latest"
-rust = { version = "latest", profile = "default", components = "llvm-tools,rust-analyzer,rustfmt" }
+rust = { version = "latest", profile = "default", components = "llvm-tools,rust-analyzer,rustfmt,cargo-clippy" }
 "ubi:cargo-bins/cargo-binstall" = "latest"
 "cargo:systemfd" = "latest"
 "cargo:cargo-sort" = "latest"
@@ -27,5 +27,6 @@ experimental = true
 [hooks]
 postinstall = [
   "bun install",
+
   "hk install --mise"
 ]

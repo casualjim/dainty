@@ -56,7 +56,7 @@ jobs:
 
       - name: Ensure rust toolchain is correct
         working-directory: ../test-project
-        run: rustup component add llvm-tools rust-analyzer rustfmt
+        run: rustup component add llvm-tools rust-analyzer rustfmt cargo-clippy
 
       - name: Check formatting
         run: mise format
