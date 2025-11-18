@@ -48,15 +48,13 @@ jobs:
 
       - name: Install dependencies
         working-directory: ../test-project
-        run: mise install
+        run: |-
+          mise install
+          rustup component add llvm-tools rust-analyzer rustfmt clippy
 
       - name: Ensure compilation works
         working-directory: ../test-project
         run: mise build:debug
-
-      - name: Ensure rust toolchain is correct
-        working-directory: ../test-project
-        run: rustup component add llvm-tools rust-analyzer rustfmt clippy
 
       - name: Check formatting
         run: mise format

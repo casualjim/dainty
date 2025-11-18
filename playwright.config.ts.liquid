@@ -38,7 +38,7 @@ export default defineConfig({
     env: {
       TEST_MODE: "true",
       "{{project-name | shouty_snake_case}}_HTTP_PORT": "3001",
-      RUST_LOG: debug,
+      RUST_LOG: "debug",
     },
   },
   projects: [
