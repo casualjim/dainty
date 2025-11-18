@@ -14,6 +14,7 @@ pkl = "latest"
 java = "latest"
 "ubi:cargo-bins/cargo-binstall" = "latest"
 "cargo:sqlx-cli" = { version = "latest", binstall = true }
+biome = "latest"
 
 [env]
 _.file = ".env.json"
