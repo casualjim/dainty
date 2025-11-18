@@ -68,6 +68,7 @@ jobs:
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_project_test
         run: |
+          bun install
           bunx playwright install --with-deps
           mise test:e2e
 
