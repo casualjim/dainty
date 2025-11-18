@@ -16,6 +16,7 @@ pkl = "latest"
 java = "latest"
 "cargo:sqlx-cli" = { version = "latest", binstall = true }
 biome = "latest"
+taplo = "latest"
 
 [env]
 _.file = ".env.json"
