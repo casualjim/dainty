@@ -10,3 +10,6 @@ default = "A full-stack Rust web application"
 type = "string"
 prompt = "Database name"
 default = "{{project-name | snake_case}}"
+
+[hooks]
+post = ["post-setup.rhai"]
